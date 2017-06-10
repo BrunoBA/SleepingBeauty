@@ -9,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
 
 import com.theorangeteam.sleepingbeauty.PermissionControl
@@ -18,7 +19,7 @@ import com.theorangeteam.sleepingbeauty.R
  * Created by ThomazFB on 6/10/17.
  */
 
-abstract class PermissionActivity : Activity()
+abstract class PermissionActivity : AppCompatActivity()
 {
     internal var permissionAcceptanceDialog: AlertDialog? = null
     var isPermissionDeniedDialogVisible = false
@@ -30,8 +31,7 @@ abstract class PermissionActivity : Activity()
         PermissionControl.doPermissionRoutine(this)
     }
 
-    val permissions: Array<String>
-        get() = arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    abstract fun getPermissions(): Array<String>
 
     fun onPermissionDenied()
     {
@@ -59,15 +59,6 @@ abstract class PermissionActivity : Activity()
         permissionAcceptanceDialog!!.show()
         isPermissionDeniedDialogVisible = true
         isRequestOnGoing = false
-    }
-
-    private fun startWriteSettingsView(): DialogInterface.OnClickListener
-    {
-        return DialogInterface.OnClickListener { dialog, which ->
-            val writeSettingsIntent = Intent("android.settings.action.MANAGE_WRITE_SETTINGS")
-            writeSettingsIntent.data = Uri.parse("package:" + packageName)
-            startActivity(writeSettingsIntent)
-        }
     }
 
     fun onDialogBackPress(): DialogInterface.OnKeyListener
