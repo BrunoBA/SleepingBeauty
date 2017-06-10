@@ -17,7 +17,7 @@ object PermissionControl
 {
     private val REQUEST_CODE = 0x1
 
-    fun allPermissionsGranted(permissionActivity: PermissionActivity): Boolean
+    fun allPermissionsAreGranted(permissionActivity: PermissionActivity): Boolean
     {
         var hasPermission = true
 
