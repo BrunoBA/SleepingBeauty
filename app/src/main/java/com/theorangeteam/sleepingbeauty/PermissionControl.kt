@@ -21,7 +21,7 @@ object PermissionControl
     {
         var hasPermission = true
 
-        for (permission in permissionActivity.permissions)
+        for (permission in permissionActivity.permissionList())
         {
             if (ContextCompat.checkSelfPermission(permissionActivity,
                     permission) != PackageManager.PERMISSION_GRANTED)
@@ -37,12 +37,12 @@ object PermissionControl
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && activity.isAnyPermissionOnGoing)
         {
-            for (permission in activity.permissions)
+            for (permission in activity.permissionList())
             {
                 if (isPermissionUnauthorized(activity, permission) && !activity.shouldShowRequestPermissionRationale(permission))
                 {
 
-                    activity.requestPermissions(activity.permissions, REQUEST_CODE)
+                    activity.requestPermissions(activity.permissionList(), REQUEST_CODE)
                     activity.isRequestOnGoing = true
                     break
                 }
@@ -80,7 +80,7 @@ object PermissionControl
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            for (permission in activity.permissions)
+            for (permission in activity.permissionList())
             {
                 if (!activity.shouldShowRequestPermissionRationale(permission) && isPermissionUnauthorized(activity, permission))
                 {
@@ -95,7 +95,7 @@ object PermissionControl
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            for (permission in activity.permissions)
+            for (permission in activity.permissionList())
             {
                 if (isPermissionUnauthorized(activity, permission))
                 {
@@ -110,7 +110,7 @@ object PermissionControl
     fun retryPermissionAcceptance(activity: PermissionActivity): DialogInterface.OnClickListener
     {
         return DialogInterface.OnClickListener { dialog, which ->
-            activity.requestPermissions(activity.permissions, REQUEST_CODE)
+            activity.requestPermissions(activity.permissionList(), REQUEST_CODE)
             activity.isPermissionDeniedDialogVisible = false
             activity.isRequestOnGoing = false
         }

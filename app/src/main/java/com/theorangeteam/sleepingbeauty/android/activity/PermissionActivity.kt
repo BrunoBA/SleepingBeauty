@@ -31,7 +31,7 @@ abstract class PermissionActivity : AppCompatActivity()
         PermissionControl.doPermissionRoutine(this)
     }
 
-    abstract fun getPermissions(): Array<String>
+    abstract fun permissionList(): Array<String>
 
     fun onPermissionDenied()
     {

@@ -12,5 +12,5 @@ class HomeActivity : PermissionActivity() {
         setContentView(R.layout.activity_home)
     }
 
-    override fun getPermissions(): Array<String> = arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
+    override fun permissionList(): Array<String> = arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)
 }
