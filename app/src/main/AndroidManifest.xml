@@ -22,8 +22,6 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".ContextService"/>
-
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
             android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk" />
