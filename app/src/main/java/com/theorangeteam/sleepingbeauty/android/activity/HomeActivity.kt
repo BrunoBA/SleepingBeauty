@@ -1,7 +1,8 @@
-package com.theorangeteam.sleepingbeauty
+package com.theorangeteam.sleepingbeauty.android.activity
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import com.theorangeteam.sleepingbeauty.R
 
 class HomeActivity : AppCompatActivity() {
 
