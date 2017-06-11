@@ -15,6 +15,7 @@ import android.widget.Button
 import butterknife.bindView
 import com.theorangeteam.sleepingbeauty.R
 import com.theorangeteam.sleepingbeauty.android.Preferences
+import com.theorangeteam.sleepingbeauty.android.activity.HomeActivity
 
 /**
  * Created by ThomazFB on 6/10/17.
@@ -33,7 +34,7 @@ class SettingsDialog : DialogFragment()
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        currentLocationAsHomeClick.setOnClickListener({view -> onCurrentLocationAsHomeClick()})
+        currentLocationAsHomeClick.setOnClickListener({ view -> onCurrentLocationAsHomeClick() })
     }
 
     override fun onResume()
@@ -60,15 +61,15 @@ class SettingsDialog : DialogFragment()
 
     fun onCurrentLocationAsHomeClick()
     {
-        val currentLocation = loadCurrentLocation()
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val currentLocation = locationManager.loadCurrentLocation()
         Preferences.saveLocationIntoPreferences(context, currentLocation)
     }
 
     @SuppressLint("MissingPermission")
-    private fun loadCurrentLocation(): Location
+    fun LocationManager.loadCurrentLocation(): Location
     {
-        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val providers = locationManager.getProviders(true)
-        return locationManager.getLastKnownLocation(providers[0])
+        val providers = getProviders(true)
+        return getLastKnownLocation(providers[0])
     }
 }

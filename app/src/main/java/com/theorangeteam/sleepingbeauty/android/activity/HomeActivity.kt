@@ -1,13 +1,18 @@
 package com.theorangeteam.sleepingbeauty.android.activity
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.theorangeteam.sleepingbeauty.ContextService
 import com.theorangeteam.sleepingbeauty.PermissionControl
 import com.theorangeteam.sleepingbeauty.R
+import com.theorangeteam.sleepingbeauty.android.Preferences
 import com.theorangeteam.sleepingbeauty.android.component.SettingsDialog
 
 class HomeActivity : PermissionActivity()
@@ -33,7 +38,7 @@ class HomeActivity : PermissionActivity()
     override fun onOptionsItemSelected(item: MenuItem?): Boolean
     {
         val action = item?.itemId
-        when(action)
+        when (action)
         {
             R.id.action_settings -> return onSettingsClick()
             else -> return super.onOptionsItemSelected(item)
