@@ -19,7 +19,9 @@ import com.google.android.gms.awareness.fence.FenceUpdateRequest
 import com.google.android.gms.awareness.fence.LocationFence
 import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
+import com.theorangeteam.sleepingbeauty.BroadcastReceiver.ScreenReceiver
 import com.theorangeteam.sleepingbeauty.Events.HomeEvent
+import com.theorangeteam.sleepingbeauty.Events.ScreenEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -31,7 +33,6 @@ class ContextService : Service() {
 
     private lateinit var googleApiClient: GoogleApiClient
     private var myPendingIntent: PendingIntent? = null
-    private var homeReceiver: HomeBroadcastReceiver? = null
     val FENCE_RECEIVE: String = "FENCE_RECEIVE"
 
     override fun onBind(intent: Intent?): IBinder {
@@ -44,7 +45,13 @@ class ContextService : Service() {
         googleApiClient = AwarenessService.getGoogleApiService(this)
         googleApiClient.connect()
         initHomeFence()
+        initScreenReceiver()
         EventBus.getDefault().register(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        EventBus.getDefault().unregister(this)
     }
 
     @SuppressLint("MissingPermission")
@@ -68,8 +75,15 @@ class ContextService : Service() {
     private fun initBroadcastReceiver() {
         val intent = Intent(FENCE_RECEIVE)
         myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-        homeReceiver = HomeBroadcastReceiver()
+        val homeReceiver = HomeBroadcastReceiver()
         registerReceiver(homeReceiver, IntentFilter(FENCE_RECEIVE))
+    }
+
+    private fun initScreenReceiver() {
+        val filter = IntentFilter(Intent.ACTION_SCREEN_ON)
+        filter.addAction(Intent.ACTION_SCREEN_OFF)
+        val mReceiver = ScreenReceiver()
+        registerReceiver(mReceiver, filter)
     }
 
     @Subscribe
@@ -78,6 +92,15 @@ class ContextService : Service() {
             //TODO: ESTÁ EM CASA
         } else {
             //TODO: TA EM CASA NÃO
+        }
+    }
+
+    @Subscribe
+    private fun onScreenEvent(screenEvent: ScreenEvent) {
+        if (screenEvent.isScreenTurnedOn) {
+            //TODO: TELA LIGADA
+        } else {
+            //TODO: TELA DESLIGADA
         }
     }
 
