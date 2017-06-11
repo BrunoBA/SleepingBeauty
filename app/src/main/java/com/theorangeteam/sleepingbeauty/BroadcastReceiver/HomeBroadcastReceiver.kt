@@ -4,9 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.text.TextUtils
-import android.widget.Switch
 import com.google.android.gms.awareness.fence.FenceState
-import com.theorangeteam.sleepingbeauty.Events.HomeEvent
+import com.theorangeteam.sleepingbeauty.events.HomeEvent
 import org.greenrobot.eventbus.EventBus
 
 /**

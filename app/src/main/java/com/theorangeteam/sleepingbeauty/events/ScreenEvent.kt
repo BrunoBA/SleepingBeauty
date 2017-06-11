@@ -1,4 +1,4 @@
-package com.theorangeteam.sleepingbeauty.Events
+package com.theorangeteam.sleepingbeauty.events
 
 /**
  * Created by guilh on 11/06/2017.

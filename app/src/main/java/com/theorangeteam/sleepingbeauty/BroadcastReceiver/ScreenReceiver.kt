@@ -3,7 +3,7 @@ package com.theorangeteam.sleepingbeauty.BroadcastReceiver
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.theorangeteam.sleepingbeauty.Events.ScreenEvent
+import com.theorangeteam.sleepingbeauty.events.ScreenEvent
 import org.greenrobot.eventbus.EventBus
 
 /**

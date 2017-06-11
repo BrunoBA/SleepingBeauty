@@ -13,6 +13,9 @@ import com.theorangeteam.sleepingbeauty.awareness.AwarenessService
 import com.google.android.gms.awareness.state.HeadphoneState
 import android.content.IntentFilter
 import android.app.PendingIntent
+import android.content.Context
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import com.google.android.gms.awareness.fence.AwarenessFence
 import com.google.android.gms.awareness.fence.DetectedActivityFence
 import com.google.android.gms.awareness.fence.FenceUpdateRequest
@@ -20,8 +23,10 @@ import com.google.android.gms.awareness.fence.LocationFence
 import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.ScreenReceiver
-import com.theorangeteam.sleepingbeauty.Events.HomeEvent
-import com.theorangeteam.sleepingbeauty.Events.ScreenEvent
+import com.theorangeteam.sleepingbeauty.android.Preferences
+import com.theorangeteam.sleepingbeauty.events.HomeEvent
+import com.theorangeteam.sleepingbeauty.events.ScreenEvent
+import com.theorangeteam.sleepingbeauty.listeners.LightSensorListener
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -46,6 +51,7 @@ class ContextService : Service() {
         googleApiClient.connect()
         initHomeFence()
         initScreenReceiver()
+        initLightningSensor()
         EventBus.getDefault().register(this)
     }
 
@@ -54,13 +60,10 @@ class ContextService : Service() {
         EventBus.getDefault().unregister(this)
     }
 
-    @SuppressLint("MissingPermission")
+
     private fun initHomeFence() {
         initBroadcastReceiver()
-        val homeFence = LocationFence.`in`(10.5, 45.5, 500.8, 50) //TODO: ALTERAR POR VALORES DAS SHARED PREFERENCES
-        val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
-        val homeStillFence = AwarenessFence.and(homeFence, stillFence)
-
+        val homeStillFence = buildAwarenessFence()
         val fenceUpdateRequest = FenceUpdateRequest.Builder()
                 .addFence(HomeBroadcastReceiver.FENCE_KEY, homeStillFence, myPendingIntent)
                 .build()
@@ -70,6 +73,18 @@ class ContextService : Service() {
                         Log.e(Service::class.java.simpleName, "erro ao inicializar fence")
                     }
                 }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun buildAwarenessFence(): AwarenessFence {
+        val locationValues = Preferences.getLocationFromPreferences(this)
+        val latitude = locationValues[Preferences.currentLatitude] as Double
+        val longitude = locationValues[Preferences.currentLongitude] as Double
+        val homeFence = LocationFence.`in`(latitude, longitude, 500.8, 50)
+
+        val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
+        val homeStillFence = AwarenessFence.and(homeFence, stillFence)
+        return homeStillFence
     }
 
     private fun initBroadcastReceiver() {
@@ -84,6 +99,13 @@ class ContextService : Service() {
         filter.addAction(Intent.ACTION_SCREEN_OFF)
         val mReceiver = ScreenReceiver()
         registerReceiver(mReceiver, filter)
+    }
+
+    private fun initLightningSensor() {
+        val mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val lightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
+        mSensorManager.registerListener(LightSensorListener(), lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        //TODO: falta configurar os eventos do sensor saber quanto caralhas de lux significa estar escuro
     }
 
     @Subscribe
