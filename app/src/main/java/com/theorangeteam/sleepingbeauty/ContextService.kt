@@ -10,18 +10,26 @@ import com.google.android.gms.awareness.snapshot.*
 import com.google.android.gms.common.api.GoogleApiClient
 import com.theorangeteam.sleepingbeauty.awareness.AwarenessService
 import com.google.android.gms.awareness.state.HeadphoneState
-import com.google.android.gms.awareness.state.Weather
-
-
+import android.content.IntentFilter
+import android.app.PendingIntent
+import android.util.Log
+import com.google.android.gms.awareness.fence.FenceUpdateRequest
+import com.google.android.gms.awareness.fence.LocationFence
+import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
+import com.theorangeteam.sleepingbeauty.Events.HomeEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
 
 
 /**
  * Created by ThomazFB on 6/10/17.
  */
-class ContextService : Service {
-    constructor() : super()
+class ContextService : Service() {
 
     private lateinit var googleApiClient: GoogleApiClient
+    private var myPendingIntent: PendingIntent? = null
+    private var homeReceiver: HomeBroadcastReceiver? = null
+    val FENCE_RECEIVE: String = "FENCE_RECEIVE"
 
     override fun onBind(intent: Intent?): IBinder {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
@@ -31,9 +39,42 @@ class ContextService : Service {
         super.onCreate()
         googleApiClient = AwarenessService.getGoogleApiService(this)
         googleApiClient.connect()
-        initSnapshots()
+        initHomeFence()
+        EventBus.getDefault().register(this)
     }
 
+    @SuppressLint("MissingPermission")
+    private fun initHomeFence() {
+        initBroadcastReceiver()
+        val homeFence = LocationFence.`in`(10.5, 45.5, 500.8, 50) //TODO: ALTERAR POR VALORES DAS SHARED PREFERENCES
+        val fenceUpdateRequest = FenceUpdateRequest.Builder()
+                .addFence(HomeBroadcastReceiver.FENCE_KEY, homeFence, myPendingIntent)
+                .build()
+        Awareness.FenceApi.updateFences(googleApiClient, fenceUpdateRequest)
+                .setResultCallback { result ->
+                    if (!result.isSuccess) {
+                        Log.e("HOME_FENCE", "erro ao inicializar fence")
+                    }
+                }
+    }
+
+    private fun initBroadcastReceiver() {
+        val intent = Intent(FENCE_RECEIVE)
+        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
+        homeReceiver = HomeBroadcastReceiver()
+        registerReceiver(homeReceiver, IntentFilter(FENCE_RECEIVE))
+    }
+
+    @Subscribe
+    private fun onHomeEvent(homeEvent: HomeEvent) {
+        if (homeEvent.inHomeArea) {
+            //TODO: ESTÁ EM CASA
+        } else {
+            //TODO: TA EM CASA NÃO
+        }
+    }
+
+    //  region snaphshot API
     @SuppressLint("MissingPermission")
     private fun initSnapshots() {
         Awareness.SnapshotApi.getHeadphoneState(googleApiClient)
@@ -49,7 +90,7 @@ class ContextService : Service {
     }
 
     private fun onWeatherResult(weatherResult: WeatherResult) {
-        if (weatherResult.status.isSuccess){
+        if (weatherResult.status.isSuccess) {
             val weather = weatherResult.weather
         }
     }
@@ -90,4 +131,6 @@ class ContextService : Service {
             //TODO: TRATAR EVENTO AQUI
         }
     }
+    //endregion
+
 }
