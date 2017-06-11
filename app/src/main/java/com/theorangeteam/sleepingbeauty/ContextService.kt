@@ -13,7 +13,6 @@ import com.theorangeteam.sleepingbeauty.awareness.AwarenessService
 import com.google.android.gms.awareness.state.HeadphoneState
 import android.content.IntentFilter
 import android.app.PendingIntent
-import android.util.Log
 import com.google.android.gms.awareness.fence.FenceUpdateRequest
 import com.google.android.gms.awareness.fence.LocationFence
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
@@ -55,7 +54,7 @@ class ContextService : Service() {
         Awareness.FenceApi.updateFences(googleApiClient, fenceUpdateRequest)
                 .setResultCallback { result ->
                     if (!result.isSuccess) {
-                        Log.e("HOME_FENCE", "erro ao inicializar fence")
+                        Log.e(Service::class.java.simpleName, "erro ao inicializar fence")
                     }
                 }
     }
