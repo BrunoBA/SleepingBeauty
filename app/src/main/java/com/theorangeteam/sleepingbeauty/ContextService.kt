@@ -13,8 +13,11 @@ import com.theorangeteam.sleepingbeauty.awareness.AwarenessService
 import com.google.android.gms.awareness.state.HeadphoneState
 import android.content.IntentFilter
 import android.app.PendingIntent
+import com.google.android.gms.awareness.fence.AwarenessFence
+import com.google.android.gms.awareness.fence.DetectedActivityFence
 import com.google.android.gms.awareness.fence.FenceUpdateRequest
 import com.google.android.gms.awareness.fence.LocationFence
+import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.Events.HomeEvent
 import org.greenrobot.eventbus.EventBus
@@ -48,8 +51,11 @@ class ContextService : Service() {
     private fun initHomeFence() {
         initBroadcastReceiver()
         val homeFence = LocationFence.`in`(10.5, 45.5, 500.8, 50) //TODO: ALTERAR POR VALORES DAS SHARED PREFERENCES
+        val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
+        val homeStillFence = AwarenessFence.and(homeFence, stillFence)
+
         val fenceUpdateRequest = FenceUpdateRequest.Builder()
-                .addFence(HomeBroadcastReceiver.FENCE_KEY, homeFence, myPendingIntent)
+                .addFence(HomeBroadcastReceiver.FENCE_KEY, homeStillFence, myPendingIntent)
                 .build()
         Awareness.FenceApi.updateFences(googleApiClient, fenceUpdateRequest)
                 .setResultCallback { result ->
