@@ -26,6 +26,7 @@ object Preferences
 
     fun getLocationFromPreferences(context: Context): Map<String, Double>
     {
+        this.context = context
         val locationValues = HashMap<String, Double>()
         locationValues.put(currentLatitude, sharedPreferences.getFloat(currentLatitude, 0f).toDouble())
         locationValues.put(currentLongitude, sharedPreferences.getFloat(currentLongitude, 0f).toDouble())
