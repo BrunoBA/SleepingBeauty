@@ -6,4 +6,6 @@
     <string name="permission_blocked_dialog_title">Why you\'re doing this to me?</string>
     <string name="permission_blocked_explanation">Since you\'re incapable of accept all permissions even when we asked you to ACCEPT IT, NOW YOU HAVE TO ENTER THE APPLICATION SETTINGS TO MAKE THIS SHIT WORK, BITCH</string>
     <string name="settings_text">Settings</string>
+    <string name="application_settings_text">Application Settings</string>
+    <string name="current_location_action_text">Set Current Location as Home</string>
 </resources>
