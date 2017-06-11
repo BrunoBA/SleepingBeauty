@@ -109,7 +109,7 @@ class ContextService : Service() {
     }
 
     @Subscribe
-    private fun onHomeEvent(homeEvent: HomeEvent) {
+    fun onHomeEvent(homeEvent: HomeEvent) {
         if (homeEvent.inHomeArea) {
             //TODO: ESTÁ EM CASA
         } else {
@@ -118,7 +118,7 @@ class ContextService : Service() {
     }
 
     @Subscribe
-    private fun onScreenEvent(screenEvent: ScreenEvent) {
+    fun onScreenEvent(screenEvent: ScreenEvent) {
         if (screenEvent.isScreenTurnedOn) {
             //TODO: TELA LIGADA
         } else {
