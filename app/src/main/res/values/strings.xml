@@ -3,7 +3,7 @@
     <string name="permission_denied_explanation">To make this application work correctly, we need those permissions</string>
     <string name="permission_denied_dialog_title">Dude, don\'t do this</string>
     <string name="retry_text">Retry</string>
-    <string name="permission_blocked_dialog_title">You\'re a pain in the ass</string>
+    <string name="permission_blocked_dialog_title">Why you\'re doing this to me?</string>
     <string name="permission_blocked_explanation">Since you\'re incapable of accept all permissions even when we asked you to ACCEPT IT, NOW YOU HAVE TO ENTER THE APPLICATION SETTINGS TO MAKE THIS SHIT WORK, BITCH</string>
     <string name="settings_text">Settings</string>
 </resources>
