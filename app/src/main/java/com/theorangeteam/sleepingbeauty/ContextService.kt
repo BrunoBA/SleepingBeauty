@@ -16,10 +16,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorManager
-import com.google.android.gms.awareness.fence.AwarenessFence
-import com.google.android.gms.awareness.fence.DetectedActivityFence
-import com.google.android.gms.awareness.fence.FenceUpdateRequest
-import com.google.android.gms.awareness.fence.LocationFence
+import com.google.android.gms.awareness.fence.*
 import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.ScreenReceiver
@@ -29,6 +26,7 @@ import com.theorangeteam.sleepingbeauty.events.ScreenEvent
 import com.theorangeteam.sleepingbeauty.listeners.LightSensorListener
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.util.*
 
 
 /**
@@ -80,9 +78,10 @@ class ContextService : Service() {
         val locationValues = Preferences.getLocationFromPreferences(this)
         val latitude = locationValues[Preferences.currentLatitude] as Double
         val longitude = locationValues[Preferences.currentLongitude] as Double
-        val homeFence = LocationFence.`in`(latitude, longitude, 500.8, 50)
+        val homeFence = LocationFence.`in`(latitude, longitude, 100.0, 50)
 
         val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
+
         val homeStillFence = AwarenessFence.and(homeFence, stillFence)
         return homeStillFence
     }

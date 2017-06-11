@@ -20,7 +20,7 @@ class HomeBroadcastReceiver : BroadcastReceiver() {
         val fenceState = FenceState.extract(intent)
         if (TextUtils.equals(fenceState.fenceKey, FENCE_KEY)) when (fenceState.currentState) {
             FenceState.TRUE -> EventBus.getDefault().post(HomeEvent(true))
-            FenceState.FALSE -> EventBus.getDefault().post(HomeEvent(true))
+            FenceState.FALSE -> EventBus.getDefault().post(HomeEvent(false))
         }
     }
 }
