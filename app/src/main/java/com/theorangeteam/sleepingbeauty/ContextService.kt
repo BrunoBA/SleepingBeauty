@@ -29,8 +29,8 @@ class ContextService : Service {
     }
 
     override fun onCreate() {
-        Log.i(Service::class.java.simpleName, "Service created")
         super.onCreate()
+        Log.i(Service::class.java.simpleName, "Service created")
         googleApiClient = AwarenessService.getGoogleApiService(this)
         googleApiClient.connect()
         initSnapshots()
