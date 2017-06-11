@@ -22,10 +22,12 @@ import com.theorangeteam.sleepingbeauty.BroadcastReceiver.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.BroadcastReceiver.ScreenReceiver
 import com.theorangeteam.sleepingbeauty.android.Preferences
 import com.theorangeteam.sleepingbeauty.events.HomeEvent
+import com.theorangeteam.sleepingbeauty.events.LightEvent
 import com.theorangeteam.sleepingbeauty.events.ScreenEvent
 import com.theorangeteam.sleepingbeauty.listeners.LightSensorListener
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
+import java.sql.Time
 import java.util.*
 
 
@@ -58,7 +60,6 @@ class ContextService : Service() {
         EventBus.getDefault().unregister(this)
     }
 
-
     private fun initHomeFence() {
         initBroadcastReceiver()
         val homeStillFence = buildAwarenessFence()
@@ -79,8 +80,10 @@ class ContextService : Service() {
         val latitude = locationValues[Preferences.currentLatitude] as Double
         val longitude = locationValues[Preferences.currentLongitude] as Double
         val homeFence = LocationFence.`in`(latitude, longitude, 100.0, 50)
-
         val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
+        //val start = 22L * 60L * 60L * 1000L //ISSO É CONVERSÃO DE HORAS PARA MILISEGUNDOS
+        //val end =  6L * 60L * 60L * 1000L
+        ///val timeFence = TimeFence.inDailyInterval(TimeZone.getDefault(),end, start)
 
         val homeStillFence = AwarenessFence.and(homeFence, stillFence)
         return homeStillFence
@@ -125,68 +128,13 @@ class ContextService : Service() {
         }
     }
 
-    //  region snaphshot API
-    @SuppressLint("MissingPermission")
-    private fun initSnapshots() {
-        Awareness.SnapshotApi.getHeadphoneState(googleApiClient)
-                .setResultCallback { result -> onHeadphoneStateResult(result) }
-        Awareness.SnapshotApi.getLocation(googleApiClient)
-                .setResultCallback { result -> onLocationResult(result) }
-        Awareness.SnapshotApi.getPlaces(googleApiClient)
-                .setResultCallback { result -> onPlacesResult(result) }
-        Awareness.SnapshotApi.getDetectedActivity(googleApiClient)
-                .setResultCallback { result -> onActivityResult(result) }
-        Awareness.SnapshotApi.getWeather(googleApiClient)
-                .setResultCallback { result -> onWeatherResult(result) }
-    }
-
-    private fun onWeatherResult(weatherResult: WeatherResult) {
-        if (weatherResult.status.isSuccess) {
-            val weather = weatherResult.weather
+    @Subscribe
+    fun onLightEvent(lightEvent: LightEvent) {
+        if (lightEvent.isLight) {
+            //TODO: ESTA ILUMINADO
+        } else {
+            //TODO: ESTA ESCURO
         }
     }
-
-    fun onHeadphoneStateResult(@NonNull headphoneStateResult: HeadphoneStateResult) {
-        if (headphoneStateResult.status.isSuccess) {
-            val headphoneState = headphoneStateResult.headphoneState
-            if (headphoneState.state == HeadphoneState.PLUGGED_IN) {
-
-                Log.i(Service::class.java.simpleName, "Headphone plugged")
-                //TODO: TRATAR EVENTO AQUI
-            } else {
-                //TODO: TRATAR EVENTO AQUI
-            }
-        }
-    }
-
-    fun onLocationResult(@NonNull locationResult: LocationResult) {
-        if (locationResult.status.isSuccess) {
-            val location = locationResult.location
-            location.latitude
-            location.longitude
-            Log.i(Service::class.java.simpleName, "Location acquired: Latitude ${location.latitude} and Longitude ${location.longitude}")
-            //TODO: TRATAR EVENTO AQUI
-        }
-    }
-
-    fun onPlacesResult(placesResult: PlacesResult) {
-        if (placesResult.status.isSuccess) {
-            val places = placesResult.placeLikelihoods
-            if (places != null) {
-                Log.i(Service::class.java.simpleName, "Place acquired: Latitude")
-                //TODO: TRATAR EVENTO AQUI
-            }
-        }
-    }
-
-    private fun onActivityResult(activityResult: DetectedActivityResult) {
-        if (activityResult.status.isSuccess) {
-            val ar = activityResult.activityRecognitionResult
-            val probableActivity = ar.mostProbableActivity
-            Log.i(Service::class.java.simpleName, "Activity acquired: ${probableActivity.type}")
-            //TODO: TRATAR EVENTO AQUI
-        }
-    }
-    //endregion
 
 }
