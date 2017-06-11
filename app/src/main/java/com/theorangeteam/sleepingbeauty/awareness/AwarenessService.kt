@@ -1,5 +1,8 @@
 package com.theorangeteam.sleepingbeauty.awareness
 
+import android.content.Context
+import android.support.annotation.NonNull
+import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient
 
 /**
@@ -9,11 +12,11 @@ interface AwarenessService {
 
     companion object Factory
     {
-        private lateinit var googleApiClient: GoogleApiClient
-
-        fun getGoogleApiService() : GoogleApiClient
+        fun getGoogleApiService(@NonNull context : Context) : GoogleApiClient
         {
-            return googleApiClient
+            return GoogleApiClient.Builder(context)
+                    .addApi(Awareness.API)
+                    .build()
         }
     }
 }
