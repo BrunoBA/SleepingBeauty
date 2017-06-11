@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.support.annotation.NonNull
+import android.util.Log
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.awareness.snapshot.*
 import com.google.android.gms.common.api.GoogleApiClient
@@ -37,6 +38,7 @@ class ContextService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        Log.i(Service::class.java.simpleName, "Service created")
         googleApiClient = AwarenessService.getGoogleApiService(this)
         googleApiClient.connect()
         initHomeFence()
@@ -99,6 +101,8 @@ class ContextService : Service() {
         if (headphoneStateResult.status.isSuccess) {
             val headphoneState = headphoneStateResult.headphoneState
             if (headphoneState.state == HeadphoneState.PLUGGED_IN) {
+
+                Log.i(Service::class.java.simpleName, "Headphone plugged")
                 //TODO: TRATAR EVENTO AQUI
             } else {
                 //TODO: TRATAR EVENTO AQUI
@@ -111,6 +115,7 @@ class ContextService : Service() {
             val location = locationResult.location
             location.latitude
             location.longitude
+            Log.i(Service::class.java.simpleName, "Location acquired: Latitude ${location.latitude} and Longitude ${location.longitude}")
             //TODO: TRATAR EVENTO AQUI
         }
     }
@@ -119,6 +124,7 @@ class ContextService : Service() {
         if (placesResult.status.isSuccess) {
             val places = placesResult.placeLikelihoods
             if (places != null) {
+                Log.i(Service::class.java.simpleName, "Place acquired: Latitude")
                 //TODO: TRATAR EVENTO AQUI
             }
         }
@@ -128,6 +134,7 @@ class ContextService : Service() {
         if (activityResult.status.isSuccess) {
             val ar = activityResult.activityRecognitionResult
             val probableActivity = ar.mostProbableActivity
+            Log.i(Service::class.java.simpleName, "Activity acquired: ${probableActivity.type}")
             //TODO: TRATAR EVENTO AQUI
         }
     }

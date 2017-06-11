@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.theorangeteam.sleepingbeauty">
+          package="com.theorangeteam.sleepingbeauty">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
 
     <application
         android:allowBackup="true"
@@ -16,21 +17,26 @@
 
         <activity android:name=".android.activity.HomeActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
+        <service
+            android:name=".ContextService"
+            android:enabled="true"
+            android:exported="false"/>
+
         <meta-data
             android:name="com.google.android.awareness.API_KEY"
-            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk" />
+            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk"/>
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk" />
+            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk"/>
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
-            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk" />
+            android:value="AIzaSyAHwpZkrNfhe20ZIyRHtZHghW1JN0VE_Rk"/>
 
     </application>
 
