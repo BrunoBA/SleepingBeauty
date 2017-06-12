@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient
 import android.media.AudioManager
+import com.theorangeteam.sleepingbeauty.android.Preferences
 import java.util.*
 
 
@@ -63,9 +64,20 @@ class AwarenessManager(val context: Context)
 
     private fun isSleepingTime(): Boolean
     {
+        val userSleepingTime = Preferences.getUserSleepingTimeRangeFromPreferences()
+        val currentTime = loadCustomCalendar(Calendar.HOUR, 0)
+        val fromTime = loadCustomCalendar(userSleepingTime.get(Preferences.startingSleepTimeKey)!!, 0)
+        val toTime = loadCustomCalendar(userSleepingTime.get(Preferences.endingSleepTimeKey)!!, 1)
+
+        return currentTime.after(fromTime) && currentTime.before(toTime)
+    }
+
+    private fun loadCustomCalendar(hourOfDay: Int, daysForward: Int): Calendar
+    {
         val calendar = Calendar.getInstance()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-        return currentHour >= 22 || currentHour <= 7
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay)
+        calendar.add(Calendar.DAY_OF_YEAR, daysForward)
+        return calendar
     }
 
     companion object Factory

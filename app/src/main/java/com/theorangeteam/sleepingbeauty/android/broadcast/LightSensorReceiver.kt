@@ -1,4 +1,4 @@
-package com.theorangeteam.sleepingbeauty.android.listener
+package com.theorangeteam.sleepingbeauty.android.broadcast
 
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -10,12 +10,12 @@ import org.greenrobot.eventbus.EventBus
 /**
  * Created by guilh on 11/06/2017.
  */
-class LightSensorListener : SensorEventListener
+class LightSensorReceiver : SensorEventListener
 {
     override fun onSensorChanged(event: SensorEvent)
     {
         val luxValues = event.values[0]
-        Log.d(LightSensorListener::class.java.simpleName, "Valor iluminação: $luxValues")
+        Log.d(LightSensorReceiver::class.java.simpleName, "Valor iluminação: $luxValues")
         if (luxValues <= 3.0)
         {
             EventBus.getDefault().post(AmbientLightChangedEvent(false))

@@ -13,30 +13,54 @@ object Preferences
 {
     private val sharedPreferencesKey = "SLEEPING_BEAUTY_SHARED_PREFERENCES"
     private val customHomeLocationInserted = "CUSTOM_HOME_LOCATION_INSERTED"
-    private val sharedPreferences: SharedPreferences by lazy { loadSharedPreferences(context) }
-    private lateinit var context: Context
-    val currentLatitude = "CURRENT_LATITUDE"
-    val currentLongitude = "CURRENT_LONGITUDE"
+    private val sharedPreferences: SharedPreferences by lazy { loadSharedPreferences(Application.instance!!.applicationContext) }
+    private val defaultStartingSleepTime = 22
+    private val defaultEndingSleepTime = 7
+    val currentLatitudeKey = "CURRENT_LATITUDE"
+    val currentLongitudeKey = "CURRENT_LONGITUDE"
+    val startingSleepTimeKey = "STARTING_SLEEP_TIME"
+    val endingSleepTimeKey = "ENDING_SLEEP_TIME"
 
-    fun saveHomeLocationIntoPreferences(context: Context, location: Location)
+    fun saveHomeLocationIntoPreferences(location: Location)
     {
-        this.context = context
         val editor = sharedPreferences.edit()
-        editor.putFloat(currentLatitude, location.latitude.toFloat())
-        editor.putFloat(currentLongitude, location.longitude.toFloat())
+        editor.putFloat(currentLatitudeKey, location.latitude.toFloat())
+        editor.putFloat(currentLongitudeKey, location.longitude.toFloat())
         editor.putBoolean(customHomeLocationInserted, true)
         editor.apply()
         EventBus.getDefault().post(HomeLocationConfiguredEvent())
     }
 
-    fun getHomeLocationFromPreferences(context: Context): Map<String, Double>
+    fun saveStartingSleepTimeIntoPreferences(startingSleepTime: Int)
     {
-        this.context = context
+        val editor = sharedPreferences.edit()
+        editor.putInt(startingSleepTimeKey, startingSleepTime)
+        editor.apply()
+    }
+
+    fun saveEndingSleepTimeIntoPreferences(endingSleepTime: Int)
+    {
+        val editor = sharedPreferences.edit()
+        editor.putInt(endingSleepTimeKey, endingSleepTime)
+        editor.apply()
+    }
+
+    fun getHomeLocationFromPreferences(): Map<String, Double>
+    {
         val locationValues = HashMap<String, Double>()
-        locationValues.put(currentLatitude, sharedPreferences.getFloat(currentLatitude, 0f).toDouble())
-        locationValues.put(currentLongitude, sharedPreferences.getFloat(currentLongitude, 0f).toDouble())
+        locationValues.put(currentLatitudeKey, sharedPreferences.getFloat(currentLatitudeKey, 0f).toDouble())
+        locationValues.put(currentLongitudeKey, sharedPreferences.getFloat(currentLongitudeKey, 0f).toDouble())
         return locationValues
     }
+
+    fun getUserSleepingTimeRangeFromPreferences(): Map<String, Int>
+    {
+        val sleepingTimeValues = HashMap<String, Int>()
+        sleepingTimeValues.put(startingSleepTimeKey, sharedPreferences.getInt(startingSleepTimeKey, defaultStartingSleepTime))
+        sleepingTimeValues.put(endingSleepTimeKey, sharedPreferences.getInt(endingSleepTimeKey, defaultEndingSleepTime))
+        return sleepingTimeValues
+    }
+
 
     fun thereIsAHomeLocationConfigured(): Boolean
     {

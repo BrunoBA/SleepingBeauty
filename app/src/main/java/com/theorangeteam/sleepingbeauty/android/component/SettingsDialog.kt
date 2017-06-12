@@ -1,6 +1,7 @@
 package com.theorangeteam.sleepingbeauty.android.component
 
 import android.annotation.SuppressLint
+import android.app.TimePickerDialog
 import android.content.Context
 import android.content.res.Configuration
 import android.location.Location
@@ -22,7 +23,9 @@ import com.theorangeteam.sleepingbeauty.android.Preferences
 
 class SettingsDialog : DialogFragment()
 {
-    val currentLocationAsHomeClick: Button by bindView(R.id.set_current_location_as_home_button)
+    val currentLocationAsHomeButton: Button by bindView(R.id.set_current_location_as_home_button)
+    val editStartingSleepTimeButton: Button by bindView(R.id.edit_starting_time_button)
+    val editEndingSleepTimeButton: Button by bindView(R.id.edit_ending_time_button)
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View?
     {
@@ -33,7 +36,9 @@ class SettingsDialog : DialogFragment()
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        currentLocationAsHomeClick.setOnClickListener({ view -> onCurrentLocationAsHomeClick() })
+        currentLocationAsHomeButton.setOnClickListener { view -> onCurrentLocationAsHomeClick() }
+        editStartingSleepTimeButton.setOnClickListener { view -> onEditStartingSleepTimeClick() }
+        editEndingSleepTimeButton.setOnClickListener { view -> onEditEndingSleepTimeClick() }
     }
 
     override fun onResume()
@@ -58,11 +63,24 @@ class SettingsDialog : DialogFragment()
         resizeDialog()
     }
 
-    fun onCurrentLocationAsHomeClick()
+    private fun onCurrentLocationAsHomeClick()
     {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val currentLocation = locationManager.loadCurrentLocation()
-        Preferences.saveHomeLocationIntoPreferences(context, currentLocation)
+        Preferences.saveHomeLocationIntoPreferences(currentLocation)
+    }
+
+    private fun onEditStartingSleepTimeClick()
+    {
+        TimePickerDialog(context, { timePicker, hour, minute ->  Preferences.saveStartingSleepTimeIntoPreferences(hour)},
+                Preferences.getUserSleepingTimeRangeFromPreferences().get(Preferences.startingSleepTimeKey)!!, 0, true).show()
+        
+    }
+
+    private fun onEditEndingSleepTimeClick()
+    {
+        TimePickerDialog(context, { timePicker, hour, minute ->  Preferences.saveEndingSleepTimeIntoPreferences(hour)},
+                Preferences.getUserSleepingTimeRangeFromPreferences().get(Preferences.endingSleepTimeKey)!!, 0, true).show()
     }
 
     @SuppressLint("MissingPermission")

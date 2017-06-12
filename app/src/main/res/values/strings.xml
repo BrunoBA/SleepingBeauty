@@ -10,4 +10,7 @@
     <string name="current_location_action_text">Set Current Location as Home</string>
     <string name="write_settings_dialog_title">We need a very dangerous permission</string>
     <string name="write_settings_permission_explanation">We also need a additional permission that requires you to sell your soul to the devil so this app can work, please accept it or uninstall the app, thanks.</string>
+    <string name="starting_sleep_time">Starting sleep time:</string>
+    <string name="ending_sleep_time">Ending sleep time:</string>
+    <string name="edit">Edit</string>
 </resources>

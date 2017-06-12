@@ -1,4 +1,4 @@
-package com.theorangeteam.sleepingbeauty.android
+package com.theorangeteam.sleepingbeauty.awareness
 
 import android.annotation.SuppressLint
 import android.app.PendingIntent
@@ -18,13 +18,13 @@ import com.google.android.gms.awareness.fence.LocationFence
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.DetectedActivity
+import com.theorangeteam.sleepingbeauty.android.Preferences
 import com.theorangeteam.sleepingbeauty.android.broadcast.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.android.broadcast.ScreenReceiver
-import com.theorangeteam.sleepingbeauty.awareness.AwarenessManager
 import com.theorangeteam.sleepingbeauty.events.AmbientLightChangedEvent
 import com.theorangeteam.sleepingbeauty.events.DeviceUnusedAtHomeEvent
 import com.theorangeteam.sleepingbeauty.events.ScreenActivationChangedEvent
-import com.theorangeteam.sleepingbeauty.android.listener.LightSensorListener
+import com.theorangeteam.sleepingbeauty.android.broadcast.LightSensorReceiver
 import com.theorangeteam.sleepingbeauty.events.HomeLocationConfiguredEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -33,7 +33,7 @@ import org.greenrobot.eventbus.Subscribe
 /**
  * Created by ThomazFB on 6/10/17.
  */
-class ContextService : Service()
+class AwarenessService : Service()
 {
 
     private lateinit var googleApiClient: GoogleApiClient
@@ -113,9 +113,9 @@ class ContextService : Service()
     @SuppressLint("MissingPermission")
     private fun loadLocationFence(): AwarenessFence?
     {
-        val locationValues = Preferences.getHomeLocationFromPreferences(this)
-        val latitude = locationValues[Preferences.currentLatitude] as Double
-        val longitude = locationValues[Preferences.currentLongitude] as Double
+        val locationValues = Preferences.getHomeLocationFromPreferences()
+        val latitude = locationValues[Preferences.currentLatitudeKey] as Double
+        val longitude = locationValues[Preferences.currentLongitudeKey] as Double
         val homeFence = LocationFence.`in`(latitude, longitude, 100.0, 50)
         return homeFence
     }
@@ -140,7 +140,7 @@ class ContextService : Service()
     {
         val mSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         val lightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT)
-        mSensorManager.registerListener(LightSensorListener(), lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        mSensorManager.registerListener(LightSensorReceiver(), lightSensor, SensorManager.SENSOR_DELAY_NORMAL)
     }
 
     @Subscribe
