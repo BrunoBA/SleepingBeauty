@@ -3,6 +3,8 @@ package com.theorangeteam.sleepingbeauty.android
 import android.content.Context
 import android.content.SharedPreferences
 import android.location.Location
+import com.theorangeteam.sleepingbeauty.events.HomeLocationConfiguredEvent
+import org.greenrobot.eventbus.EventBus
 
 /**
  * Created by ThomazFB on 6/10/17.
@@ -15,16 +17,17 @@ object Preferences
     val currentLatitude = "CURRENT_LATITUDE"
     val currentLongitude = "CURRENT_LONGITUDE"
 
-    fun saveLocationIntoPreferences(context: Context, location: Location)
+    fun saveHomeLocationIntoPreferences(context: Context, location: Location)
     {
         this.context = context
         val editor = sharedPreferences.edit()
         editor.putFloat(currentLatitude, location.latitude.toFloat())
         editor.putFloat(currentLongitude, location.longitude.toFloat())
         editor.apply()
+        EventBus.getDefault().post(HomeLocationConfiguredEvent())
     }
 
-    fun getLocationFromPreferences(context: Context): Map<String, Double>
+    fun getHomeLocationFromPreferences(context: Context): Map<String, Double>
     {
         this.context = context
         val locationValues = HashMap<String, Double>()

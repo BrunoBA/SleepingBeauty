@@ -1,8 +1,6 @@
 package com.theorangeteam.sleepingbeauty.android.activity
 
-import android.Manifest
 import android.annotation.TargetApi
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
@@ -11,8 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-
-import com.theorangeteam.sleepingbeauty.PermissionControl
+import com.theorangeteam.sleepingbeauty.android.PermissionControl
 import com.theorangeteam.sleepingbeauty.R
 
 /**
@@ -59,6 +56,31 @@ abstract class PermissionActivity : AppCompatActivity()
         permissionAcceptanceDialog!!.show()
         isPermissionDeniedDialogVisible = true
         isRequestOnGoing = false
+    }
+
+    @TargetApi(Build.VERSION_CODES.M)
+    fun handleSpecialPermission()
+    {
+        if (!Settings.System.canWrite(this))
+        {
+            permissionAcceptanceDialog = AlertDialog.Builder(this)
+                    .setTitle(getString(R.string.write_settings_dialog_title))
+                    .setMessage(getString(R.string.write_settings_permission_explanation))
+                    .setPositiveButton(getString(R.string.settings_text), startWriteSettingsView())
+                    .setCancelable(false)
+                    .setOnKeyListener(onDialogBackPress())
+                    .create()
+            permissionAcceptanceDialog!!.show()
+        }
+    }
+
+    private fun startWriteSettingsView(): DialogInterface.OnClickListener
+    {
+        return DialogInterface.OnClickListener { dialog, which ->
+            val writeSettingsIntent = Intent("android.settings.action.MANAGE_WRITE_SETTINGS")
+            writeSettingsIntent.data = Uri.parse("package:" + getPackageName())
+            startActivity(writeSettingsIntent)
+        }
     }
 
     fun onDialogBackPress(): DialogInterface.OnKeyListener

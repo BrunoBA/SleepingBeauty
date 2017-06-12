@@ -15,7 +15,6 @@ import android.widget.Button
 import butterknife.bindView
 import com.theorangeteam.sleepingbeauty.R
 import com.theorangeteam.sleepingbeauty.android.Preferences
-import com.theorangeteam.sleepingbeauty.android.activity.HomeActivity
 
 /**
  * Created by ThomazFB on 6/10/17.
@@ -63,7 +62,7 @@ class SettingsDialog : DialogFragment()
     {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val currentLocation = locationManager.loadCurrentLocation()
-        Preferences.saveLocationIntoPreferences(context, currentLocation)
+        Preferences.saveHomeLocationIntoPreferences(context, currentLocation)
     }
 
     @SuppressLint("MissingPermission")

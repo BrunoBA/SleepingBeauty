@@ -37,7 +37,6 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
 
-
     //Android Framework dependencies
     compile 'com.google.android.gms:play-services-contextmanager:9.4.0'
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"

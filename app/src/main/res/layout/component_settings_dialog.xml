@@ -14,9 +14,9 @@
     <Button
         android:id="@+id/set_current_location_as_home_button"
         android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="@string/current_location_action_text"
-        android:layout_height="50dp"/>
+        android:text="@string/current_location_action_text"/>
 
 </LinearLayout>

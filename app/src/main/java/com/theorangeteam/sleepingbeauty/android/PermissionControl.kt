@@ -1,4 +1,4 @@
-package com.theorangeteam.sleepingbeauty
+package com.theorangeteam.sleepingbeauty.android
 
 import android.annotation.TargetApi
 import android.app.Activity
@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.content.ContextCompat
-
 import com.theorangeteam.sleepingbeauty.android.activity.PermissionActivity
 
 /**
@@ -39,17 +38,17 @@ object PermissionControl
         {
             for (permission in activity.permissionList())
             {
-                if (isPermissionUnauthorized(activity, permission) && !activity.shouldShowRequestPermissionRationale(permission))
+                if (PermissionControl.isPermissionUnauthorized(activity, permission) && !activity.shouldShowRequestPermissionRationale(permission))
                 {
 
-                    activity.requestPermissions(activity.permissionList(), REQUEST_CODE)
+                    activity.requestPermissions(activity.permissionList(), PermissionControl.REQUEST_CODE)
                     activity.isRequestOnGoing = true
                     break
                 }
             }
             if (!activity.isRequestOnGoing)
             {
-                permissionCheckup(activity)
+                PermissionControl.permissionCheckup(activity)
             }
         }
     }
@@ -72,6 +71,10 @@ object PermissionControl
             {
                 activity.onPermissionDenied()
             }
+            else
+            {
+                activity.handleSpecialPermission()
+            }
             activity.isRequestOnGoing = false
         }
     }
@@ -82,7 +85,7 @@ object PermissionControl
         {
             for (permission in activity.permissionList())
             {
-                if (!activity.shouldShowRequestPermissionRationale(permission) && isPermissionUnauthorized(activity, permission))
+                if (!activity.shouldShowRequestPermissionRationale(permission) && PermissionControl.isPermissionUnauthorized(activity, permission))
                 {
                     return true
                 }
@@ -97,7 +100,7 @@ object PermissionControl
         {
             for (permission in activity.permissionList())
             {
-                if (isPermissionUnauthorized(activity, permission))
+                if (PermissionControl.isPermissionUnauthorized(activity, permission))
                 {
                     return true
                 }
@@ -106,11 +109,11 @@ object PermissionControl
         return false
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @android.annotation.TargetApi(android.os.Build.VERSION_CODES.M)
     fun retryPermissionAcceptance(activity: PermissionActivity): DialogInterface.OnClickListener
     {
-        return DialogInterface.OnClickListener { dialog, which ->
-            activity.requestPermissions(activity.permissionList(), REQUEST_CODE)
+        return android.content.DialogInterface.OnClickListener { dialog, which ->
+            activity.requestPermissions(activity.permissionList(), PermissionControl.REQUEST_CODE)
             activity.isPermissionDeniedDialogVisible = false
             activity.isRequestOnGoing = false
         }
