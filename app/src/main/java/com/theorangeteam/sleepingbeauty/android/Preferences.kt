@@ -12,6 +12,7 @@ import org.greenrobot.eventbus.EventBus
 object Preferences
 {
     private val sharedPreferencesKey = "SLEEPING_BEAUTY_SHARED_PREFERENCES"
+    private val customHomeLocationInserted = "CUSTOM_HOME_LOCATION_INSERTED"
     private val sharedPreferences: SharedPreferences by lazy { loadSharedPreferences(context) }
     private lateinit var context: Context
     val currentLatitude = "CURRENT_LATITUDE"
@@ -23,6 +24,7 @@ object Preferences
         val editor = sharedPreferences.edit()
         editor.putFloat(currentLatitude, location.latitude.toFloat())
         editor.putFloat(currentLongitude, location.longitude.toFloat())
+        editor.putBoolean(customHomeLocationInserted, true)
         editor.apply()
         EventBus.getDefault().post(HomeLocationConfiguredEvent())
     }
@@ -34,6 +36,11 @@ object Preferences
         locationValues.put(currentLatitude, sharedPreferences.getFloat(currentLatitude, 0f).toDouble())
         locationValues.put(currentLongitude, sharedPreferences.getFloat(currentLongitude, 0f).toDouble())
         return locationValues
+    }
+
+    fun thereIsAHomeLocationConfigured(): Boolean
+    {
+        return sharedPreferences.getBoolean(customHomeLocationInserted, false)
     }
 
     private fun loadSharedPreferences(context: Context): SharedPreferences

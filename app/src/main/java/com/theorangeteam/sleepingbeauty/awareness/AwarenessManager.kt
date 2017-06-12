@@ -6,7 +6,7 @@ import android.util.Log
 import com.google.android.gms.awareness.Awareness
 import com.google.android.gms.common.api.GoogleApiClient
 import android.media.AudioManager
-
+import java.util.*
 
 
 /**
@@ -43,7 +43,8 @@ class AwarenessManager(val context: Context)
         Log.i(AwarenessManager::class.java.simpleName, "Device home and still: $isDeviceUnusedAtHome")
         Log.i(AwarenessManager::class.java.simpleName, "Device with screen inactive: $isScreenInactive")
         Log.i(AwarenessManager::class.java.simpleName, "Device in a dim light ambient: $isAmbientLightDim")
-        val isSleeping = isDeviceUnusedAtHome && isScreenInactive && isAmbientLightDim
+        Log.i(AwarenessManager::class.java.simpleName, "Is current time a sleeping time: ${isSleepingTime()}")
+        val isSleeping = isDeviceUnusedAtHome && isScreenInactive && isAmbientLightDim && isSleepingTime()
         if (isSleeping) activateSleepingMode() else deactivateSleepingMode()
     }
 
@@ -58,6 +59,13 @@ class AwarenessManager(val context: Context)
     {
         Log.i(AwarenessManager::class.java.simpleName, "Deactivating Sleeping Mode")
         audioManager.ringerMode = AudioManager.RINGER_MODE_NORMAL
+    }
+
+    private fun isSleepingTime(): Boolean
+    {
+        val calendar = Calendar.getInstance()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        return currentHour >= 22 || currentHour <= 7
     }
 
     companion object Factory

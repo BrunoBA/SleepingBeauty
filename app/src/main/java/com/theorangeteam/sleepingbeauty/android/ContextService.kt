@@ -16,6 +16,7 @@ import com.google.android.gms.awareness.fence.DetectedActivityFence
 import com.google.android.gms.awareness.fence.FenceUpdateRequest
 import com.google.android.gms.awareness.fence.LocationFence
 import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.android.broadcast.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.android.broadcast.ScreenReceiver
@@ -52,6 +53,7 @@ class ContextService : Service()
         googleApiClient = AwarenessManager.getGoogleApiService(this)
         googleApiClient.connect()
         EventBus.getDefault().register(this)
+        initContextSensors()
     }
 
     override fun onDestroy()
@@ -68,35 +70,42 @@ class ContextService : Service()
 
     private fun initContextSensors()
     {
-        initHomeFence()
-        initScreenReceiver()
-        initLightningSensor()
+        if(Preferences.thereIsAHomeLocationConfigured()) {
+            initHomeFence()
+            initScreenReceiver()
+            initLightningSensor()
+        }
     }
 
     private fun initHomeFence()
     {
         initBroadcastReceiver()
         val homeStillFence = buildAwarenessFence()
-        val fenceUpdateRequest = FenceUpdateRequest.Builder()
+        val fenceUpdateRequest = buildFenceRequest(homeStillFence)
+        loadFence(fenceUpdateRequest)
+    }
+
+    private fun buildFenceRequest(homeStillFence: AwarenessFence): FenceUpdateRequest? {
+        return FenceUpdateRequest.Builder()
                 .addFence(HomeBroadcastReceiver.FENCE_KEY, homeStillFence, myPendingIntent)
                 .build()
+    }
+
+    private fun loadFence(fenceUpdateRequest: FenceUpdateRequest?) {
         Awareness.FenceApi.updateFences(googleApiClient, fenceUpdateRequest)
-                .setResultCallback { result ->
-                    if (!result.isSuccess)
-                    {
-                        Log.e(Service::class.java.simpleName, "erro ao inicializar fence")
-                    }
-                }
+                .setResultCallback { result -> onFenceLoadingResult(result) }
+    }
+
+    private fun onFenceLoadingResult(result: Status) {
+        if (!result.isSuccess) {
+            Log.e(Service::class.java.simpleName, "erro ao inicializar fence")
+        }
     }
 
     private fun buildAwarenessFence(): AwarenessFence
     {
         val homeFence = loadLocationFence()
         val stillFence = DetectedActivityFence.during(DetectedActivity.STILL)
-        //val start = 22L * 60L * 60L * 1000L //ISSO É CONVERSÃO DE HORAS PARA MILISEGUNDOS
-        //val end =  6L * 60L * 60L * 1000L
-        ///val timeFence = TimeFence.inDailyInterval(TimeZone.getDefault(),end, start)
-
         val homeStillFence = AwarenessFence.and(homeFence, stillFence)
         return homeStillFence
     }
