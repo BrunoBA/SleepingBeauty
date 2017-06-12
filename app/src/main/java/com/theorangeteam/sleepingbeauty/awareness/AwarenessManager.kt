@@ -17,26 +17,32 @@ class AwarenessManager(val context: Context)
     private val audioManager: AudioManager by lazy { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
 
     var isDeviceUnusedAtHome: Boolean = false
+        get() = field
         set(value)
         {
-            isDeviceUnusedAtHome = value
+            field = value
             checkDeviceSleepingContext()
         }
     var isScreenInactive: Boolean = false
+        get() = field
         set(value)
         {
-            isScreenInactive = value
+            field = value
             checkDeviceSleepingContext()
         }
     var isAmbientLightDim: Boolean = false
+        get() = field
         set(value)
         {
-            isAmbientLightDim = value
+            field = value
             checkDeviceSleepingContext()
         }
 
     private fun checkDeviceSleepingContext()
     {
+        Log.i(AwarenessManager::class.java.simpleName, "Device home and still: $isDeviceUnusedAtHome")
+        Log.i(AwarenessManager::class.java.simpleName, "Device with screen inactive: $isScreenInactive")
+        Log.i(AwarenessManager::class.java.simpleName, "Device in a dim light ambient: $isAmbientLightDim")
         val isSleeping = isDeviceUnusedAtHome && isScreenInactive && isAmbientLightDim
         if (isSleeping) activateSleepingMode() else deactivateSleepingMode()
     }
