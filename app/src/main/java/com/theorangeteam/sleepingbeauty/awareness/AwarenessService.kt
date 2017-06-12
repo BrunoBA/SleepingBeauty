@@ -3,6 +3,7 @@ package com.theorangeteam.sleepingbeauty.awareness
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -21,11 +22,9 @@ import com.google.android.gms.location.DetectedActivity
 import com.theorangeteam.sleepingbeauty.android.Preferences
 import com.theorangeteam.sleepingbeauty.android.broadcast.HomeBroadcastReceiver
 import com.theorangeteam.sleepingbeauty.android.broadcast.ScreenReceiver
-import com.theorangeteam.sleepingbeauty.events.AmbientLightChangedEvent
-import com.theorangeteam.sleepingbeauty.events.DeviceUnusedAtHomeEvent
-import com.theorangeteam.sleepingbeauty.events.ScreenActivationChangedEvent
 import com.theorangeteam.sleepingbeauty.android.broadcast.LightSensorReceiver
-import com.theorangeteam.sleepingbeauty.events.HomeLocationConfiguredEvent
+import com.theorangeteam.sleepingbeauty.android.broadcast.TiltingBroadcastReceiver
+import com.theorangeteam.sleepingbeauty.events.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 
@@ -37,9 +36,11 @@ class AwarenessService : Service()
 {
 
     private lateinit var googleApiClient: GoogleApiClient
-    private var myPendingIntent: PendingIntent? = null
+    private var homeBroadcastIntent: PendingIntent? = null
+    private var tiltBroadcastIntent: PendingIntent? = null
     private val awarenessManager: AwarenessManager by lazy { AwarenessManager(this) }
-    val FENCE_RECEIVE: String = "FENCE_RECEIVE"
+    val HOME_FENCE_RECEIVE: String = "HOME_FENCE_RECEIVE"
+    val TILT_FENCE_RECEIVE: String = "TILT_FENCE_RECEIVE"
 
     override fun onBind(intent: Intent?): IBinder
     {
@@ -79,7 +80,8 @@ class AwarenessService : Service()
 
     private fun initHomeFence()
     {
-        initBroadcastReceiver()
+        homeBroadcastIntent = initBroadcastReceiver(HOME_FENCE_RECEIVE, HomeBroadcastReceiver(), 0)
+        tiltBroadcastIntent = initBroadcastReceiver(TILT_FENCE_RECEIVE, TiltingBroadcastReceiver(), 1)
         val homeStillFence = buildAwarenessFence()
         val fenceUpdateRequest = buildFenceRequest(homeStillFence)
         loadFence(fenceUpdateRequest)
@@ -87,7 +89,8 @@ class AwarenessService : Service()
 
     private fun buildFenceRequest(homeStillFence: AwarenessFence): FenceUpdateRequest? {
         return FenceUpdateRequest.Builder()
-                .addFence(HomeBroadcastReceiver.FENCE_KEY, homeStillFence, myPendingIntent)
+                .addFence(HomeBroadcastReceiver.FENCE_KEY, homeStillFence, homeBroadcastIntent)
+                .addFence(TiltingBroadcastReceiver.FENCE_KEY, DetectedActivityFence.during(DetectedActivity.TILTING), tiltBroadcastIntent)
                 .build()
     }
 
@@ -120,12 +123,12 @@ class AwarenessService : Service()
         return homeFence
     }
 
-    private fun initBroadcastReceiver()
+    private fun initBroadcastReceiver(intentAction: String, broadcastReceiver: BroadcastReceiver, requestCode: Int): PendingIntent
     {
-        val intent = Intent(FENCE_RECEIVE)
-        myPendingIntent = PendingIntent.getBroadcast(this, 0, intent, 0)
-        val homeReceiver = HomeBroadcastReceiver()
-        registerReceiver(homeReceiver, IntentFilter(FENCE_RECEIVE))
+        val intent = Intent(intentAction)
+        val broadcastIntent = PendingIntent.getBroadcast(this, requestCode, intent, 0)
+        registerReceiver(broadcastReceiver, IntentFilter(intentAction))
+        return broadcastIntent
     }
 
     private fun initScreenReceiver()
@@ -146,7 +149,7 @@ class AwarenessService : Service()
     @Subscribe
     fun onHomeFenceCrossedEvent(deviceUnusedAtHomeEvent: DeviceUnusedAtHomeEvent)
     {
-        awarenessManager.isDeviceUnusedAtHome = deviceUnusedAtHomeEvent.inHomeArea
+        awarenessManager.isDeviceHomeAndStill = deviceUnusedAtHomeEvent.inHomeArea
     }
 
     @Subscribe
@@ -159,6 +162,12 @@ class AwarenessService : Service()
     fun onLightEvent(ambientLightChangedEvent: AmbientLightChangedEvent)
     {
         awarenessManager.isAmbientLightDim = !ambientLightChangedEvent.isLightBright
+    }
+
+    @Subscribe
+    fun onTiltEvent(tiltStateChangedEvent: TiltStateChangedEvent)
+    {
+        awarenessManager.isDeviceSettled = !tiltStateChangedEvent.isTilting
     }
 
 }
