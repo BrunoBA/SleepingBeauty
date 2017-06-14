@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import com.theorangeteam.sleepingbeauty.awareness.AwarenessService
-import com.theorangeteam.sleepingbeauty.android.PermissionControl
+import com.theorangeteam.sleepingbeauty.android.PermissionHandler
 import com.theorangeteam.sleepingbeauty.R
 import com.theorangeteam.sleepingbeauty.android.component.SettingsDialog
 
@@ -44,7 +44,7 @@ class HomeActivity : PermissionActivity()
 
     private fun startContextService()
     {
-        if (PermissionControl.allPermissionsAreGranted(this))
+        if (PermissionHandler.allPermissionsAreGranted(this))
         {
             val serviceIntent = Intent(this, AwarenessService::class.java)
             startService(serviceIntent)

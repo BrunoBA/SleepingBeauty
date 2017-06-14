@@ -12,23 +12,17 @@ import com.theorangeteam.sleepingbeauty.android.activity.PermissionActivity
  * Created by ThomazFB on 6/10/17.
  */
 
-object PermissionControl
+object PermissionHandler
 {
     private val REQUEST_CODE = 0x1
 
     fun allPermissionsAreGranted(permissionActivity: PermissionActivity): Boolean
     {
-        var hasPermission = true
-
-        for (permission in permissionActivity.permissionList())
-        {
-            if (ContextCompat.checkSelfPermission(permissionActivity,
-                    permission) != PackageManager.PERMISSION_GRANTED)
-            {
-                hasPermission = false
-                break
-            }
+        val hasPermission = permissionActivity.permissionList().none {
+            ContextCompat.checkSelfPermission(permissionActivity,
+                    it) != PackageManager.PERMISSION_GRANTED
         }
+
         return hasPermission
     }
 
@@ -38,17 +32,17 @@ object PermissionControl
         {
             for (permission in activity.permissionList())
             {
-                if (PermissionControl.isPermissionUnauthorized(activity, permission) && !activity.shouldShowRequestPermissionRationale(permission))
+                if (PermissionHandler.isPermissionUnauthorized(activity, permission) && !activity.shouldShowRequestPermissionRationale(permission))
                 {
 
-                    activity.requestPermissions(activity.permissionList(), PermissionControl.REQUEST_CODE)
+                    activity.requestPermissions(activity.permissionList(), PermissionHandler.REQUEST_CODE)
                     activity.isRequestOnGoing = true
                     break
                 }
             }
             if (!activity.isRequestOnGoing)
             {
-                PermissionControl.permissionCheckup(activity)
+                PermissionHandler.permissionCheckup(activity)
             }
         }
     }
@@ -63,11 +57,11 @@ object PermissionControl
     {
         if (!activity.isPermissionDeniedDialogVisible && activity.isPermissionAcceptanceDialogVisible)
         {
-            if (PermissionControl.isNeverAskAgainEnabled(activity))
+            if (PermissionHandler.isNeverAskAgainEnabled(activity))
             {
                 activity.onPermissionBlocked()
             }
-            else if (PermissionControl.isAnyPermissionStillUnauthorized(activity))
+            else if (PermissionHandler.isAnyPermissionStillUnauthorized(activity))
             {
                 activity.onPermissionDenied()
             }
@@ -83,13 +77,10 @@ object PermissionControl
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            for (permission in activity.permissionList())
-            {
-                if (!activity.shouldShowRequestPermissionRationale(permission) && PermissionControl.isPermissionUnauthorized(activity, permission))
-                {
-                    return true
-                }
-            }
+            activity.permissionList()
+                    .asSequence()
+                    .filter { !activity.shouldShowRequestPermissionRationale(it) && PermissionHandler.isPermissionUnauthorized(activity, it) }
+                    .forEach { return true }
         }
         return false
     }
@@ -98,13 +89,10 @@ object PermissionControl
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
         {
-            for (permission in activity.permissionList())
-            {
-                if (PermissionControl.isPermissionUnauthorized(activity, permission))
-                {
-                    return true
-                }
-            }
+            activity.permissionList()
+                    .asSequence()
+                    .filter { PermissionHandler.isPermissionUnauthorized(activity, it) }
+                    .forEach { return true }
         }
         return false
     }
@@ -113,7 +101,7 @@ object PermissionControl
     fun retryPermissionAcceptance(activity: PermissionActivity): DialogInterface.OnClickListener
     {
         return android.content.DialogInterface.OnClickListener { dialog, which ->
-            activity.requestPermissions(activity.permissionList(), PermissionControl.REQUEST_CODE)
+            activity.requestPermissions(activity.permissionList(), PermissionHandler.REQUEST_CODE)
             activity.isPermissionDeniedDialogVisible = false
             activity.isRequestOnGoing = false
         }

@@ -9,7 +9,7 @@ import android.os.Build
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
 import android.view.KeyEvent
-import com.theorangeteam.sleepingbeauty.android.PermissionControl
+import com.theorangeteam.sleepingbeauty.android.PermissionHandler
 import com.theorangeteam.sleepingbeauty.R
 
 /**
@@ -25,7 +25,7 @@ abstract class PermissionActivity : AppCompatActivity()
     override fun onResume()
     {
         super.onResume()
-        PermissionControl.doPermissionRoutine(this)
+        PermissionHandler.doPermissionRoutine(this)
     }
 
     abstract fun permissionList(): Array<String>
@@ -35,7 +35,7 @@ abstract class PermissionActivity : AppCompatActivity()
         permissionAcceptanceDialog = AlertDialog.Builder(this)
                 .setTitle(getString(R.string.permission_denied_dialog_title))
                 .setMessage(getString(R.string.permission_denied_explanation))
-                .setPositiveButton(getString(R.string.retry_text), PermissionControl.retryPermissionAcceptance(this))
+                .setPositiveButton(getString(R.string.retry_text), PermissionHandler.retryPermissionAcceptance(this))
                 .setCancelable(false)
                 .setOnKeyListener(onDialogBackPress())
                 .create()
@@ -98,7 +98,7 @@ abstract class PermissionActivity : AppCompatActivity()
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray)
     {
-        PermissionControl.permissionCheckup(this)
+        PermissionHandler.permissionCheckup(this)
     }
 
     @TargetApi(Build.VERSION_CODES.M)
