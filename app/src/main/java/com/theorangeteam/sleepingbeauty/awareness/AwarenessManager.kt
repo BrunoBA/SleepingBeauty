@@ -51,13 +51,19 @@ class AwarenessManager(val context: Context)
         Log.i(AwarenessManager::class.java.simpleName, "Device home and still: $isDeviceHomeAndStill")
         Log.i(AwarenessManager::class.java.simpleName, "Device with screen inactive: $isScreenInactive")
         Log.i(AwarenessManager::class.java.simpleName, "Device in a dim light ambient: $isAmbientLightDim")
-        //Log.i(AwarenessManager::class.java.simpleName, "Device is settled: $isDeviceSettled")
         Log.i(AwarenessManager::class.java.simpleName, "Is current time a sleeping time: ${isSleepingTime()}")
 
-        val isSleeping = isDeviceHomeAndStill && isScreenInactive && isAmbientLightDim && isSleepingTime()
-        if (isSleeping) activateSleepingMode() else deactivateSleepingMode()
+
+        if (isSleeping()) activateSleepingMode() else deactivateSleepingMode()
     }
 
+    private fun isAProbableSleepingContext() = isDeviceHomeAndStill && isScreenInactive && isAmbientLightDim && isDeviceSettled
+
+    private fun isSleeping(): Boolean
+    {
+        val isSleeping = isAProbableSleepingContext() && isSleepingTime()
+        return isSleeping
+    }
 
     private fun activateSleepingMode()
     {
